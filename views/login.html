@@ -1,0 +1,12 @@
+<html>
+    Login Form
+    <form action="/login" method="POST">
+        username:
+        <input type="text" id="username" name="username">
+        password:
+        <input type="text" id="password" name="password">
+        <input type="hidden" name="validity" value="{{.Token}}">
+        <input type="submit">
+
+    </form>
+</html>
