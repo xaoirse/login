@@ -1,3 +1,6 @@
+A simple web server for login  and logout made by Echo and Gorm  
+*just for test*
+
 - [x] chanege login post request from "dashboard" to "login"
 - [x] fix groups
 - [ ] comments
