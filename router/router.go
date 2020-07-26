@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/xaoirse/logbook/handler"
+	"github.com/xaoirse/logbook/controller"
 	mymidd "github.com/xaoirse/logbook/middleware"
 )
 
@@ -24,16 +24,16 @@ func New() *echo.Echo {
 	// e.Use(middleware.Logger())
 
 	// Root
-	e.GET("/", handler.Index)
-	e.GET("/login/", handler.LoginPage)
-	e.POST("/login/", handler.Login)
-	e.POST("/logout/", handler.Logout)
+	e.GET("/", controller.Index)
+	e.GET("/login/", controller.LoginPage)
+	e.POST("/login/", controller.Login)
+	e.POST("/logout/", controller.Logout)
 
 	// Dashboard
 	dash := e.Group("/dashboard")
 	dash.Use(mymidd.TokenCheck)
-	dash.GET("/", handler.Dashboard)
-	dash.POST("/upload/", handler.Upload)
+	dash.GET("/", controller.Dashboard)
+	dash.POST("/upload/", controller.Upload)
 
 	return e
 }

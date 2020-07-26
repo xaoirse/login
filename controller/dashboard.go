@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"fmt"
@@ -6,9 +6,18 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
+// Dashboard is hanldler
+func Dashboard(c echo.Context) error {
+	sess, _ := session.Get("mySession", c)
+
+	return c.Render(http.StatusOK, "dashboard.html", sess.Values["name"])
+}
+
+// Upload is handler for upload POST request
 // TODO logs most be printed in fmt.errorf
 func Upload(c echo.Context) error {
 

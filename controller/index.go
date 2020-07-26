@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"net/http"
@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Dashboard(c echo.Context) error {
+func Index(c echo.Context) error {
 	sess, _ := session.Get("mySession", c)
 
-	return c.Render(http.StatusOK, "dashboard.html", sess.Values["name"])
+	return c.Render(http.StatusOK, "index.html", sess.Values["foo"])
 }

@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"io"
 
+	_ "github.com/xaoirse/logbook/model"
 	"github.com/xaoirse/logbook/router"
 
 	"github.com/labstack/echo/v4"
@@ -23,7 +24,7 @@ func main() {
 
 	r := router.New()
 
-	t := &Template{templates: template.Must(template.ParseGlob("views/*.html"))}
+	t := &Template{templates: template.Must(template.ParseGlob("template/*.html"))}
 	r.Renderer = t
 
 	r.Logger.Fatal(r.Start(":4000"))

@@ -1,13 +1,38 @@
-package handler
+package controller
 
 import (
+	"crypto/md5"
+	"fmt"
+	"io"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
+type loginPageData struct {
+	Token string
+}
+
+// LoginPage is GET handler for login page
+func LoginPage(c echo.Context) error {
+	// TODO add random salt
+	crutime := time.Now().Unix()
+	h := md5.New()
+	io.WriteString(h, strconv.FormatInt(crutime, 10))
+	token := fmt.Sprintf("%x", h.Sum(nil))
+	lpd := loginPageData{Token: token}
+
+	sess, _ := session.Get("mySession", c)
+	sess.Values["formToken"] = token
+	sess.Save(c.Request(), c.Response())
+	return c.Render(http.StatusOK, "login.html", lpd)
+}
+
+// Login is POST handler for login request
 func Login(c echo.Context) error {
 	sess, _ := session.Get("mySession", c)
 
