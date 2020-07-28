@@ -10,7 +10,7 @@ import (
 
 func checkErr(err error) {
 	if err != nil {
-		log.Fatalln("models/admin.go:", err)
+		log.Fatalln("models:", err)
 	}
 }
 
@@ -34,44 +34,28 @@ func init() {
 	db.AutoMigrate(&Admin{})
 }
 
-// NewAdmin make an admin by username and password
-func NewAdmin(username, password, name, family, Number string) (*Admin, bool) {
-
-	theAdmin, ok := GetAdmiByUsername(username)
-	if ok {
-		return theAdmin, false
-	}
-
+// NewAdmin create new admin if it was new
+func NewAdmin(admin *Admin) bool {
 	db, err := gorm.Open("sqlite3", "data.db")
-	defer func() {
-		closeErr := db.Close()
-		checkErr(closeErr)
-	}()
 	checkErr(err)
 
-	newAdmin := Admin{
-		Username: username,
-		Password: password,
-		Name:     name,
-		Family:   family,
-		Number:   Number,
+	// TODO validate values
+	if db.NewRecord(admin) {
+		db.Create(admin)
+		return true
 	}
-	db.Create(&newAdmin)
-	return &newAdmin, true
+	return false
 }
 
-// GetAdmiByUsername get username as string and return an admin
-func GetAdmiByUsername(username string) (*Admin, bool) {
+// GetAdminByUsername get username as string and return an admin
+func GetAdminByUsername(username string) (*Admin, bool) {
 	db, err := gorm.Open("sqlite3", "data.db")
 	defer func() {
 		closeErr := db.Close()
 		checkErr(closeErr)
 	}()
 	checkErr(err)
-	admin := Admin{
-		Username: username,
-	}
-	// TODO return admin
+	var admin Admin
 	count := 0
 	db.Where("username = ?", username).First(&admin).Count(&count)
 	if count == 0 {
@@ -79,3 +63,6 @@ func GetAdmiByUsername(username string) (*Admin, bool) {
 	}
 	return &admin, true
 }
+
+// TODO
+// func EditAdmin
