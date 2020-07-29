@@ -4,15 +4,26 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type master struct {
+type Master struct {
 	gorm.Model
-	Number   string
-	Username string
-	Password string
-	Name     string
-	Family   string
+	Number      string
+	Username    string
+	Password    string
+	Name        string
+	Family      string
+	Internships []Internship `gorm:"many2many:internship_masters"`
 }
 
+func init() {
+	db, err := gorm.Open("sqlite3", "data.db")
+	defer func() {
+		closeErr := db.Close()
+		checkErr(closeErr)
+	}()
+	checkErr(err)
+	db.AutoMigrate(&Master{})
+
+}
 func NewMaster() {
 
 }
