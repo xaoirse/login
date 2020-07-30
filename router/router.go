@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gorilla/sessions"
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -10,7 +11,7 @@ import (
 )
 
 // New return a new *Echo
-func New() *echo.Echo {
+func New(db *gorm.DB) *echo.Echo {
 	e := echo.New()
 	// TODO random secret generator
 	// Note: Don't store your key in your source code. Pass it via an
@@ -24,16 +25,16 @@ func New() *echo.Echo {
 	// e.Use(middleware.Logger())
 
 	// Root
-	e.GET("/", controller.Index)
-	e.GET("/login/", controller.LoginPage)
-	e.POST("/login/", controller.Login)
-	e.POST("/logout/", controller.Logout)
+	e.GET("/", controller.Index(db))
+	e.GET("/login/", controller.LoginPage(db))
+	e.POST("/login/", controller.Login(db))
+	e.POST("/logout/", controller.Logout(db))
 
 	// Dashboard
 	dash := e.Group("/dashboard")
 	dash.Use(mymidd.TokenCheck)
-	dash.GET("/", controller.Dashboard)
-	dash.POST("/upload/", controller.Upload)
+	dash.GET("/", controller.Dashboard(db))
+	dash.POST("/upload/", controller.Upload(db))
 
 	return e
 }

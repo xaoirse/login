@@ -8,7 +8,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-func init() {
+// GetDb initiate a DB and AutoMigrate all models
+func GetDb() *gorm.DB {
 	db, err := gorm.Open("sqlite3", "data.db")
 	if err != nil {
 		log.Fatalln("Error in opening db:", err)
@@ -27,4 +28,5 @@ func init() {
 		&Master{},
 		&Student{},
 	)
+	return db
 }
