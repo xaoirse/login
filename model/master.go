@@ -15,12 +15,7 @@ type Master struct {
 }
 
 func init() {
-	db, err := gorm.Open("sqlite3", "data.db")
-	defer func() {
-		closeErr := db.Close()
-		checkErr(closeErr)
-	}()
-	checkErr(err)
+	db := GetDb()
 	db.AutoMigrate(&Master{})
 
 }
