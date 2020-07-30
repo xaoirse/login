@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"io"
+	"log"
 
 	"github.com/xaoirse/logbook/model"
 	_ "github.com/xaoirse/logbook/model"
@@ -23,6 +24,11 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 func main() {
 	db := model.GetDb()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Fatalln("Error when closing db:", err)
+		}
+	}()
 
 	r := router.New(db)
 

@@ -14,11 +14,6 @@ func GetDb() *gorm.DB {
 	if err != nil {
 		log.Fatalln("Error in opening db:", err)
 	}
-	defer func() {
-		if closeErr := db.Close(); closeErr != nil {
-			log.Fatalln("Error when closing db:", err)
-		}
-	}()
 	db.AutoMigrate(
 		&Admin{},
 		&Action{},
