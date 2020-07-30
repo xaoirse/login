@@ -13,15 +13,3 @@ type Master struct {
 	Family      string
 	Internships []Internship `gorm:"many2many:internship_masters"`
 }
-
-func init() {
-	db := GetDb()
-	db.AutoMigrate(&Master{})
-
-}
-func NewMaster() {
-
-}
-func GetMasterByUsername(username string) {
-
-}

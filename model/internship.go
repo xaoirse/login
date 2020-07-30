@@ -16,10 +16,3 @@ type Internship struct {
 	InternshipModel   InternshipModel
 	InternshipModelID int
 }
-
-func init() {
-	db := GetDb()
-	db.AutoMigrate(&InternshipModel{})
-	db.AutoMigrate(&Internship{})
-
-}

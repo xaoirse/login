@@ -11,18 +11,3 @@ type Student struct {
 	Family      string
 	Internships []Internship `gorm:"many2many:inernship_students"`
 }
-
-func init() {
-	db := GetDb()
-	db.AutoMigrate(&Student{})
-}
-
-func NewStudent(student *Student) {
-
-}
-func GetStudentByUsername(username string) {
-
-}
-func GetStudentByNumber(number string) {
-
-}

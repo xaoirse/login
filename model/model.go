@@ -4,20 +4,27 @@ import (
 	"log"
 
 	"github.com/jinzhu/gorm"
+	// init sqlite
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-func CheckErr(err error) {
-	if err != nil {
-		log.Fatalln("models:", err)
-	}
-}
-
-func GetDb() *gorm.DB {
+func init() {
 	db, err := gorm.Open("sqlite3", "data.db")
+	if err != nil {
+		log.Fatalln("Error in opening db:", err)
+	}
 	defer func() {
-		closeErr := db.Close()
-		CheckErr(closeErr)
+		if closeErr := db.Close(); closeErr != nil {
+			log.Fatalln("Error when closing db:", err)
+		}
 	}()
-	CheckErr(err)
-	return db
+	db.AutoMigrate(
+		&Admin{},
+		&Action{},
+		&Internship{},
+		&InternshipModel{},
+		&Log{},
+		&Master{},
+		&Student{},
+	)
 }

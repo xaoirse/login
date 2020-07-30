@@ -10,9 +10,3 @@ type Log struct {
 	Action  Action
 	Master  Master
 }
-
-func init() {
-	db := GetDb()
-	db.AutoMigrate(&Log{})
-
-}
