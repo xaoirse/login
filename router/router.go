@@ -23,7 +23,7 @@ func New(db *gorm.DB) *echo.Echo {
 	e.Use(middleware.Secure())
 	// TODO uncomment for release or write better one
 	// e.Use(middleware.Logger())
-
+	// TODO a middleware for flood check
 	// Root
 	e.GET("/", controller.Index(db))
 	e.GET("/login/", controller.LoginPage(db))
@@ -32,7 +32,7 @@ func New(db *gorm.DB) *echo.Echo {
 
 	// Dashboard
 	dash := e.Group("/dashboard")
-	dash.Use(mymidd.TokenCheck)
+	dash.Use(mymidd.SessionChecker)
 	dash.GET("/", controller.Dashboard(db))
 	dash.POST("/upload/", controller.Upload(db))
 

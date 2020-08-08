@@ -12,7 +12,7 @@ type InternshipModel struct {
 type Internship struct {
 	gorm.Model
 	Name              string
-	Masters           []Master `gorm:"many2many:internship_masters"`
+	Masters           []User `gorm:"many2many:internship_masters"`
 	InternshipModel   InternshipModel
 	InternshipModelID int
 }

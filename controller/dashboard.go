@@ -11,16 +11,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Dashboard is hanldler
+// Dashboard is hanldler for GET /dashboard/
 func Dashboard(db *gorm.DB) func(echo.Context) error {
 	return func(c echo.Context) error {
-		sess, _ := session.Get("mySession", c)
-
-		return c.Render(http.StatusOK, "dashboard.html", sess.Values["name"])
+		sess, _ := session.Get("Session", c)
+		return c.Render(http.StatusOK, "dashboard.html", sess.Values["username"])
 	}
 }
 
-// Upload is handler for upload POST request
+// Upload is handler for POST /upload/
 // TODO logs most be printed in fmt.errorf
 func Upload(db *gorm.DB) func(echo.Context) error {
 	return func(c echo.Context) error {

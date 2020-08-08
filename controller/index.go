@@ -10,8 +10,7 @@ import (
 
 func Index(db *gorm.DB) func(echo.Context) error {
 	return func(c echo.Context) error {
-		sess, _ := session.Get("mySession", c)
-
+		sess, _ := session.Get("Session", c)
 		return c.Render(http.StatusOK, "index.html", sess.Values["foo"])
 	}
 }

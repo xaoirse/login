@@ -6,7 +6,7 @@ import (
 
 type Log struct {
 	gorm.Model
-	Student Student
+	Student User
 	Action  Action
-	Master  Master
+	Master  User
 }

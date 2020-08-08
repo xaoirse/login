@@ -6,9 +6,10 @@ import (
 	"strconv"
 )
 
-// ValidationCheck for "required", "number", "english", "email"
+// FieldValidationCheck for "required", "number", "english", "email"
 // and panic for else
-func ValidationCheck(str string, format ...string) bool {
+func FieldValidationCheck(str string, format ...string) bool {
+	// TODO should return error to user
 	for _, f := range format {
 		switch f {
 		case "required":

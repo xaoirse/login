@@ -10,8 +10,10 @@ import (
 
 func Logout(db *gorm.DB) func(echo.Context) error {
 	return func(c echo.Context) error {
-		sess, _ := session.Get("mySession", c)
-		sess.Values["foo"] = "no"
+
+		sess, _ := session.Get("Session", c)
+		sess.Values["token"] = ""
+		sess.Values["username"] = ""
 		sess.Save(c.Request(), c.Response())
 		return c.Redirect(http.StatusSeeOther, "/")
 	}

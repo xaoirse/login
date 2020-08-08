@@ -15,13 +15,12 @@ func GetDb() *gorm.DB {
 		log.Fatalln("Error in opening db:", err)
 	}
 	db.AutoMigrate(
-		&Admin{},
+		&User{},
 		&Action{},
 		&Internship{},
 		&InternshipModel{},
 		&Log{},
-		&Master{},
-		&Student{},
+		&Session{},
 	)
 	return db
 }
