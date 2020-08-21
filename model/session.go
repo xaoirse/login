@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -23,20 +24,23 @@ type Session struct {
 	TryToLogin int
 }
 
-// New create a new session and return token
-func (s *Session) New(c echo.Context) string {
-
+func newToken() string {
 	// Generating a random token
-	// TODO get salt from argumant
-	salt := "salt"
+	// TODO print as help
+	salt := os.Args[1]
 	crutime := time.Now().Unix()
 	str := strconv.FormatInt(crutime, 10) + salt
 	hash := md5.New()
 	hash.Write([]byte(str))
 	token := fmt.Sprintf("%x", hash.Sum(nil))
+	return token
+}
+
+// New create a new session and return token
+func (s *Session) New(c echo.Context) string {
 
 	// Saving session in db
-	s.Token = token
+	s.Token = newToken()
 	s.IP = c.RealIP()
 	db, err := gorm.Open("sqlite3", "data.db")
 	if err != nil {
@@ -56,13 +60,18 @@ func (s *Session) New(c echo.Context) string {
 	sess.Values["ip"] = s.IP
 	sess.Save(c.Request(), c.Response())
 
-	return token
+	return s.Token
 }
 
 // IsSessionValid returns true if session is valid
 func IsSessionValid(c echo.Context, tokenCheck bool) bool {
 	sess, err := session.Get("Session", c)
-	// un := sess.Values["username"].(string)
+	/*
+		Fucking diffrent between println and fmt.Println
+		and type assertion in map[interface{}]interface{}
+		un := sess.Values["username"].(string)
+		// TODO study type assertions
+	*/
 	token, _ := sess.Values["token"]
 	fmt.Println(sess.Values["username"].(string), token)
 	if err != nil ||

@@ -22,7 +22,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func main() {
+func oldMain() {
 	db := model.GetDb()
 	defer func() {
 		if err := db.Close(); err != nil {
