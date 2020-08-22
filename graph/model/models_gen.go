@@ -2,19 +2,44 @@
 
 package model
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Action struct {
+	ID   string  `json:"id"`
+	Name *string `json:"name"`
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+type Internship struct {
+	ID              string           `json:"id"`
+	Name            string           `json:"name"`
+	Masters         []*User          `json:"masters"`
+	InternshipModel *InternshipModel `json:"internshipModel"`
+	Students        []*User          `json:"students"`
+}
+
+type InternshipModel struct {
+	ID      string    `json:"id"`
+	Name    string    `json:"name"`
+	Actions []*Action `json:"actions"`
+}
+
+type Log struct {
+	ID      string  `json:"id"`
+	Student *User   `json:"student"`
+	Action  *Action `json:"action"`
+	Master  *User   `json:"master"`
+}
+
+type NewAction struct {
+	Name string `json:"name"`
 }
 
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID       string  `json:"id"`
+	Number   string  `json:"number"`
+	NCode    *string `json:"nCode"`
+	Username string  `json:"username"`
+	Password string  `json:"password"`
+	Name     *string `json:"name"`
+	LastName *string `json:"lastName"`
+	Role     string  `json:"Role"`
+	Phone    *string `json:"phone"`
 }
