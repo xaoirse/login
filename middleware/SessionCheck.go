@@ -15,6 +15,6 @@ func SessionChecker(handler echo.HandlerFunc) echo.HandlerFunc {
 		if model.IsSessionValid(c, false) {
 			return handler(c)
 		}
-		return c.Redirect(http.StatusSeeOther, "/login")
+		return c.Redirect(http.StatusSeeOther, "/login/")
 	}
 }

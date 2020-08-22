@@ -3,7 +3,6 @@ package model
 import (
 	"crypto/md5"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"time"
@@ -25,9 +24,12 @@ type Session struct {
 }
 
 func newToken() string {
+	salt := "RandomSalt"
 	// Generating a random token
 	// TODO print as help
-	salt := os.Args[1]
+	if len(os.Args) > 1 {
+		salt = os.Args[1]
+	}
 	crutime := time.Now().Unix()
 	str := strconv.FormatInt(crutime, 10) + salt
 	hash := md5.New()
@@ -37,17 +39,11 @@ func newToken() string {
 }
 
 // New create a new session and return token
-func (s *Session) New(c echo.Context) string {
-
+func (s *Session) New(c echo.Context, db *gorm.DB) string {
 	// Saving session in db
 	s.Token = newToken()
 	s.IP = c.RealIP()
-	db, err := gorm.Open("sqlite3", "data.db")
-	if err != nil {
-		log.Fatalln("Error in opening db:", err)
-	}
 	db.Create(s)
-
 	// Saving session in response
 	sess, _ := session.Get("Session", c)
 	sess.Options = &sessions.Options{
@@ -59,7 +55,6 @@ func (s *Session) New(c echo.Context) string {
 	sess.Values["username"] = s.Username
 	sess.Values["ip"] = s.IP
 	sess.Save(c.Request(), c.Response())
-
 	return s.Token
 }
 

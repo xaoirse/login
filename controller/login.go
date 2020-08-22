@@ -17,7 +17,7 @@ type loginPageData struct {
 func LoginPage(db *gorm.DB) func(echo.Context) error {
 	return func(c echo.Context) error {
 		s := model.Session{}
-		sessionToken := s.New(c)
+		sessionToken := s.New(c, db)
 		lpd := loginPageData{Validity: sessionToken}
 		return c.Render(http.StatusOK, "login.html", lpd)
 	}
@@ -42,7 +42,7 @@ func Login(db *gorm.DB) func(echo.Context) error {
 				s := model.Session{
 					Username: "s",
 				}
-				s.New(c)
+				s.New(c, db)
 				return c.Redirect(http.StatusSeeOther, "/dashboard/")
 			}
 		}

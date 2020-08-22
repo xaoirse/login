@@ -15,6 +15,6 @@ func Logout(db *gorm.DB) func(echo.Context) error {
 		sess.Values["token"] = ""
 		sess.Values["username"] = ""
 		sess.Save(c.Request(), c.Response())
-		return c.Redirect(http.StatusSeeOther, "/")
+		return c.Redirect(http.StatusSeeOther, "/home/")
 	}
 }
