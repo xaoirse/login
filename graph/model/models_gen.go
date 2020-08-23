@@ -2,9 +2,14 @@
 
 package model
 
+import (
+	"time"
+)
+
 type Action struct {
-	ID   string  `json:"id"`
-	Name *string `json:"name"`
+	ID              string             `json:"id"`
+	Name            *string            `json:"name"`
+	InternshipModel []*InternshipModel `json:"internshipModel"`
 }
 
 type Internship struct {
@@ -22,10 +27,11 @@ type InternshipModel struct {
 }
 
 type Log struct {
-	ID      string  `json:"id"`
-	Student *User   `json:"student"`
-	Action  *Action `json:"action"`
-	Master  *User   `json:"master"`
+	ID      string    `json:"id"`
+	Student *User     `json:"student"`
+	Action  *Action   `json:"action"`
+	Master  *User     `json:"master"`
+	Date    time.Time `json:"date"`
 }
 
 type NewAction struct {
@@ -33,13 +39,14 @@ type NewAction struct {
 }
 
 type User struct {
-	ID       string  `json:"id"`
-	Number   string  `json:"number"`
-	NCode    *string `json:"nCode"`
-	Username string  `json:"username"`
-	Password string  `json:"password"`
-	Name     *string `json:"name"`
-	LastName *string `json:"lastName"`
-	Role     string  `json:"Role"`
-	Phone    *string `json:"phone"`
+	ID         string        `json:"id"`
+	Number     string        `json:"number"`
+	NCode      *string       `json:"nCode"`
+	Username   string        `json:"username"`
+	Password   string        `json:"password"`
+	Name       *string       `json:"name"`
+	Lastname   *string       `json:"lastname"`
+	Role       string        `json:"Role"`
+	Phone      *string       `json:"phone"`
+	Internship []*Internship `json:"internship"`
 }

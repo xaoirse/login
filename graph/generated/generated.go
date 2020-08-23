@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -44,8 +45,9 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Action struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
+		ID              func(childComplexity int) int
+		InternshipModel func(childComplexity int) int
+		Name            func(childComplexity int) int
 	}
 
 	Internship struct {
@@ -64,6 +66,7 @@ type ComplexityRoot struct {
 
 	Log struct {
 		Action  func(childComplexity int) int
+		Date    func(childComplexity int) int
 		ID      func(childComplexity int) int
 		Master  func(childComplexity int) int
 		Student func(childComplexity int) int
@@ -78,15 +81,16 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		ID       func(childComplexity int) int
-		LastName func(childComplexity int) int
-		NCode    func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Number   func(childComplexity int) int
-		Password func(childComplexity int) int
-		Phone    func(childComplexity int) int
-		Role     func(childComplexity int) int
-		Username func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Internship func(childComplexity int) int
+		Lastname   func(childComplexity int) int
+		NCode      func(childComplexity int) int
+		Name       func(childComplexity int) int
+		Number     func(childComplexity int) int
+		Password   func(childComplexity int) int
+		Phone      func(childComplexity int) int
+		Role       func(childComplexity int) int
+		Username   func(childComplexity int) int
 	}
 }
 
@@ -118,6 +122,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Action.ID(childComplexity), true
+
+	case "Action.internshipModel":
+		if e.complexity.Action.InternshipModel == nil {
+			break
+		}
+
+		return e.complexity.Action.InternshipModel(childComplexity), true
 
 	case "Action.name":
 		if e.complexity.Action.Name == nil {
@@ -189,6 +200,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Log.Action(childComplexity), true
 
+	case "Log.date":
+		if e.complexity.Log.Date == nil {
+			break
+		}
+
+		return e.complexity.Log.Date(childComplexity), true
+
 	case "Log.id":
 		if e.complexity.Log.ID == nil {
 			break
@@ -236,12 +254,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.ID(childComplexity), true
 
-	case "User.lastName":
-		if e.complexity.User.LastName == nil {
+	case "User.internship":
+		if e.complexity.User.Internship == nil {
 			break
 		}
 
-		return e.complexity.User.LastName(childComplexity), true
+		return e.complexity.User.Internship(childComplexity), true
+
+	case "User.lastname":
+		if e.complexity.User.Lastname == nil {
+			break
+		}
+
+		return e.complexity.User.Lastname(childComplexity), true
 
 	case "User.nCode":
 		if e.complexity.User.NCode == nil {
@@ -370,6 +395,7 @@ var sources = []*ast.Source{
 type Action {
   id: ID!
   name: String
+  internshipModel: [InternshipModel]
 }
 
 type InternshipModel {
@@ -390,6 +416,7 @@ type Log{
   student: User!
   action: Action!
   master: User!
+  date: Time!
 }
 
 type User{
@@ -399,9 +426,10 @@ type User{
   username: String!
   password: String!
   name: String
-  lastName: String
+  lastname: String
   Role: String!
   phone: String
+  internship: [Internship]
 }
 
 
@@ -416,6 +444,8 @@ input NewAction {
 type Mutation {
   createAction(input: NewAction!): Action!
 }
+
+scalar Time
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -555,6 +585,37 @@ func (ec *executionContext) _Action_name(ctx context.Context, field graphql.Coll
 	res := resTmp.(*string)
 	fc.Result = res
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Action_internshipModel(ctx context.Context, field graphql.CollectedField, obj *model.Action) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Action",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.InternshipModel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.InternshipModel)
+	fc.Result = res
+	return ec.marshalOInternshipModel2ᚕᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternshipModel(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Internship_id(ctx context.Context, field graphql.CollectedField, obj *model.Internship) (ret graphql.Marshaler) {
@@ -953,6 +1014,40 @@ func (ec *executionContext) _Log_master(ctx context.Context, field graphql.Colle
 	return ec.marshalNUser2ᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Log_date(ctx context.Context, field graphql.CollectedField, obj *model.Log) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Log",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Date, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createAction(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1295,7 +1390,7 @@ func (ec *executionContext) _User_name(ctx context.Context, field graphql.Collec
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_lastName(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_lastname(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1312,7 +1407,7 @@ func (ec *executionContext) _User_lastName(ctx context.Context, field graphql.Co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.LastName, nil
+		return obj.Lastname, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1389,6 +1484,37 @@ func (ec *executionContext) _User_phone(ctx context.Context, field graphql.Colle
 	res := resTmp.(*string)
 	fc.Result = res
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_internship(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Internship, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Internship)
+	fc.Result = res
+	return ec.marshalOInternship2ᚕᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternship(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -2492,6 +2618,8 @@ func (ec *executionContext) _Action(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "name":
 			out.Values[i] = ec._Action_name(ctx, field, obj)
+		case "internshipModel":
+			out.Values[i] = ec._Action_internshipModel(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2603,6 +2731,11 @@ func (ec *executionContext) _Log(ctx context.Context, sel ast.SelectionSet, obj 
 			}
 		case "master":
 			out.Values[i] = ec._Log_master(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "date":
+			out.Values[i] = ec._Log_date(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2727,8 +2860,8 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "name":
 			out.Values[i] = ec._User_name(ctx, field, obj)
-		case "lastName":
-			out.Values[i] = ec._User_lastName(ctx, field, obj)
+		case "lastname":
+			out.Values[i] = ec._User_lastname(ctx, field, obj)
 		case "Role":
 			out.Values[i] = ec._User_Role(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -2736,6 +2869,8 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "phone":
 			out.Values[i] = ec._User_phone(ctx, field, obj)
+		case "internship":
+			out.Values[i] = ec._User_internship(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3048,6 +3183,21 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3401,6 +3551,93 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
+}
+
+func (ec *executionContext) marshalOInternship2ᚕᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternship(ctx context.Context, sel ast.SelectionSet, v []*model.Internship) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOInternship2ᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternship(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOInternship2ᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternship(ctx context.Context, sel ast.SelectionSet, v *model.Internship) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Internship(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOInternshipModel2ᚕᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternshipModel(ctx context.Context, sel ast.SelectionSet, v []*model.InternshipModel) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOInternshipModel2ᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternshipModel(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalOInternshipModel2ᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternshipModel(ctx context.Context, sel ast.SelectionSet, v *model.InternshipModel) graphql.Marshaler {
