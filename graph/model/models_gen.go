@@ -9,37 +9,52 @@ import (
 type Action struct {
 	ID              string             `json:"id"`
 	Name            *string            `json:"name"`
-	InternshipModel []*InternshipModel `json:"internshipModel" gorm:"many2many:internship_model_action"`
-	UpdateAt        string             ``
+	InternshipModel []*InternshipModel `json:"internshipModel" gorm:"many2many:internship_model_actions"`
+	// gorm.Model
+	CreatedAt time.Time  ``
+	UpdatedAt time.Time  ``
+	DeletedAt *time.Time `sql:"index"`
 }
 
 type Internship struct {
 	ID              string           `json:"id"`
 	Name            string           `json:"name"`
 	InternshipModel *InternshipModel `json:"internshipModel"`
-	Users           []*User          `json:"users" gorm:"many2many:user_internship"`
-	UpdateAt        string           ``
+	Users           []*User          `json:"users" gorm:"many2many:user_internships"`
+	// gorm.Model
+	CreatedAt time.Time  ``
+	UpdatedAt time.Time  ``
+	DeletedAt *time.Time `sql:"index"`
 }
 
 type InternshipModel struct {
-	ID       string    `json:"id"`
-	Name     string    `json:"name"`
-	Actions  []*Action `json:"actions" gorm:"many2many:internship_model_action"`
-	UpdateAt string    ``
+	ID      string    `json:"id"`
+	Name    string    `json:"name"`
+	Actions []*Action `json:"actions" gorm:"many2many:internship_model_actions"`
+	// gorm.Model
+	CreatedAt time.Time  ``
+	UpdatedAt time.Time  ``
+	DeletedAt *time.Time `sql:"index"`
 }
 
 type Log struct {
-	ID       string    `json:"id"`
-	Student  *User     `json:"student"`
-	Action   *Action   `json:"action"`
-	Master   *User     `json:"master"`
-	Date     time.Time `json:"date"`
-	UpdateAt string    ``
+	ID      string    `json:"id"`
+	Student *User     `json:"student"`
+	Action  *Action   `json:"action"`
+	Master  *User     `json:"master"`
+	Date    time.Time `json:"date"`
+	// gorm.Model
+	CreatedAt time.Time  ``
+	UpdatedAt time.Time  ``
+	DeletedAt *time.Time `sql:"index"`
 }
 
 type NewAction struct {
-	Name     string `json:"name"`
-	UpdateAt string ``
+	Name string `json:"name"`
+	// gorm.Model
+	CreatedAt time.Time  ``
+	UpdatedAt time.Time  ``
+	DeletedAt *time.Time `sql:"index"`
 }
 
 type User struct {
@@ -52,6 +67,9 @@ type User struct {
 	Lastname   *string       `json:"lastname"`
 	Role       string        `json:"Role"`
 	Phone      *string       `json:"phone"`
-	Internship []*Internship `json:"internship" gorm:"many2many:user_internship"`
-	UpdateAt   string        ``
+	Internship []*Internship `json:"internship" gorm:"many2many:user_internships"`
+	// gorm.Model
+	CreatedAt time.Time  ``
+	UpdatedAt time.Time  ``
+	DeletedAt *time.Time `sql:"index"`
 }

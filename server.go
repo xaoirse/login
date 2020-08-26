@@ -8,7 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	_ "github.com/xaoirse/logbook/graph/hook"
-	"github.com/xaoirse/logbook/model"
+	"github.com/xaoirse/logbook/graph/model"
 	"github.com/xaoirse/logbook/router"
 )
 

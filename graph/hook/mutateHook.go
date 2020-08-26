@@ -18,12 +18,10 @@ func init() {
 		fmt.Fprintln(os.Stderr, "failed to load config", err.Error())
 		os.Exit(2)
 	}
-
 	// Attaching the mutation function onto modelgen plugin
 	p := modelgen.Plugin{
 		MutateHook: mutateHook,
 	}
-
 	err = api.Generate(cfg,
 		api.NoPlugins(),
 		api.AddPlugin(&p),
@@ -52,7 +50,7 @@ func addM2mTag(model *modelgen.Object, field *modelgen.Field) {
 	} else {
 		m2mName = typeOfField + model.Name
 	}
-	field.Tag += ` gorm:"many2many:` + camel2Snacke(m2mName) + `"`
+	field.Tag += ` gorm:"many2many:` + camel2Snacke(m2mName) + `s"`
 }
 
 func addGormTags(model *modelgen.Object) {
@@ -60,17 +58,46 @@ func addGormTags(model *modelgen.Object) {
 		if strings.HasPrefix(field.Type.String(), "[]") {
 			addM2mTag(model, field)
 		}
-		// TODO add ID tags
+		if field.Name == "ID" {
+			field.Tag += ` gorm:"primary_key"`
+		}
 	}
 }
 
 func addGormFields(model *modelgen.Object) {
 	// TODO add gorm.Model fields
-	typ := types.Typ[types.String].Underlying()
-	model.Fields = append(model.Fields, &modelgen.Field{
-		Name: "updateAt",
-		Type: typ,
-	})
+	var cfg config.Config
+	typ := types.NewNamed(
+		types.NewTypeName(0, cfg.Model.Pkg(), "time.Time", nil),
+		nil,
+		nil,
+	)
+	typP := types.NewNamed(
+		types.NewTypeName(0, cfg.Model.Pkg(), "*time.Time", nil),
+		nil,
+		nil,
+	)
+	model.Fields = append(model.Fields,
+		&modelgen.Field{
+			Name:        "CreatedAt",
+			Type:        typ,
+			Description: "gorm.Model",
+		},
+		&modelgen.Field{
+			Name: "UpdatedAt",
+			Type: typ,
+		},
+		&modelgen.Field{
+			Name: "DeletedAt",
+			Type: typP,
+			Tag:  `sql:"index"`,
+		})
+	/*
+	   ID        uint `gorm:"primary_key"`
+	   	CreatedAt time.Time
+	   	UpdatedAt time.Time
+	   	DeletedAt *time.Time `sql:"index"`
+	*/
 }
 
 // Defining mutation function
