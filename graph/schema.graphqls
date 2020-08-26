@@ -24,9 +24,8 @@ type InternshipModel {
 type Internship {
   id: ID!
   name: String!
-  masters: [User]
   internshipModel: InternshipModel
-  students: [User]
+  users: [User]
 }
 type Log{
   id: ID!

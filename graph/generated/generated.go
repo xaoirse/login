@@ -53,9 +53,8 @@ type ComplexityRoot struct {
 	Internship struct {
 		ID              func(childComplexity int) int
 		InternshipModel func(childComplexity int) int
-		Masters         func(childComplexity int) int
 		Name            func(childComplexity int) int
-		Students        func(childComplexity int) int
+		Users           func(childComplexity int) int
 	}
 
 	InternshipModel struct {
@@ -151,13 +150,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Internship.InternshipModel(childComplexity), true
 
-	case "Internship.masters":
-		if e.complexity.Internship.Masters == nil {
-			break
-		}
-
-		return e.complexity.Internship.Masters(childComplexity), true
-
 	case "Internship.name":
 		if e.complexity.Internship.Name == nil {
 			break
@@ -165,12 +157,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Internship.Name(childComplexity), true
 
-	case "Internship.students":
-		if e.complexity.Internship.Students == nil {
+	case "Internship.users":
+		if e.complexity.Internship.Users == nil {
 			break
 		}
 
-		return e.complexity.Internship.Students(childComplexity), true
+		return e.complexity.Internship.Users(childComplexity), true
 
 	case "InternshipModel.actions":
 		if e.complexity.InternshipModel.Actions == nil {
@@ -407,9 +399,8 @@ type InternshipModel {
 type Internship {
   id: ID!
   name: String!
-  masters: [User]
   internshipModel: InternshipModel
-  students: [User]
+  users: [User]
 }
 type Log{
   id: ID!
@@ -686,37 +677,6 @@ func (ec *executionContext) _Internship_name(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Internship_masters(ctx context.Context, field graphql.CollectedField, obj *model.Internship) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Internship",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Masters, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.User)
-	fc.Result = res
-	return ec.marshalOUser2ᚕᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Internship_internshipModel(ctx context.Context, field graphql.CollectedField, obj *model.Internship) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -748,7 +708,7 @@ func (ec *executionContext) _Internship_internshipModel(ctx context.Context, fie
 	return ec.marshalOInternshipModel2ᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐInternshipModel(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Internship_students(ctx context.Context, field graphql.CollectedField, obj *model.Internship) (ret graphql.Marshaler) {
+func (ec *executionContext) _Internship_users(ctx context.Context, field graphql.CollectedField, obj *model.Internship) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -765,7 +725,7 @@ func (ec *executionContext) _Internship_students(ctx context.Context, field grap
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Students, nil
+		return obj.Users, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2652,12 +2612,10 @@ func (ec *executionContext) _Internship(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "masters":
-			out.Values[i] = ec._Internship_masters(ctx, field, obj)
 		case "internshipModel":
 			out.Values[i] = ec._Internship_internshipModel(ctx, field, obj)
-		case "students":
-			out.Values[i] = ec._Internship_students(ctx, field, obj)
+		case "users":
+			out.Values[i] = ec._Internship_users(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
