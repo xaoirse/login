@@ -29,16 +29,14 @@ func init() {
 }
 
 func camel2Snacke(str string) string {
+	var newStr string
 	for i, c := range str {
-		if i == 0 {
-			str = strings.Replace(str, string(c), string(unicode.ToLower(c)), 1)
-			continue
+		if unicode.IsUpper(c) && i != 0 {
+			newStr += "_"
 		}
-		if unicode.IsUpper(c) {
-			str = strings.Replace(str, string(c), "_"+string(unicode.ToLower(c)), 1)
-		}
+		newStr += string(unicode.ToLower(c))
 	}
-	return str
+	return newStr
 }
 
 func addM2mTag(model *modelgen.Object, field *modelgen.Field) {
@@ -58,7 +56,7 @@ func addGormTags(model *modelgen.Object) {
 		if strings.HasPrefix(field.Type.String(), "[]") {
 			addM2mTag(model, field)
 		}
-		if field.Name == "ID" {
+		if field.Name == "id" {
 			field.Tag += ` gorm:"primary_key"`
 		}
 	}
