@@ -12,31 +12,26 @@ import (
 	"github.com/99designs/gqlgen/plugin/modelgen"
 )
 
-func init() {
-	cfg, err := config.LoadConfigFromDefaultLocations()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "failed to load config", err.Error())
-		os.Exit(2)
+// Defining mutation function
+func mutateHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
+	for _, model := range b.Models {
+		addGormTags(model)
+		addGormFields(model)
 	}
-	// Attaching the mutation function onto modelgen plugin
-	p := modelgen.Plugin{
-		MutateHook: mutateHook,
-	}
-	err = api.Generate(cfg,
-		api.NoPlugins(),
-		api.AddPlugin(&p),
-	)
+	return b
 }
 
-func camel2Snacke(str string) string {
-	var newStr string
-	for i, c := range str {
-		if unicode.IsUpper(c) && i != 0 {
-			newStr += "_"
+func addGormTags(model *modelgen.Object) {
+	for _, field := range model.Fields {
+		if strings.HasPrefix(field.Type.String(), "[]") {
+			addM2mTag(model, field)
 		}
-		newStr += string(unicode.ToLower(c))
+		if field.Name == "id" {
+			// Why?
+			// ` gorm:"primary_key;type:uuid;default:uuid_generate_v4()`
+			field.Tag += ` gorm:"primary_key"`
+		}
 	}
-	return newStr
 }
 
 func addM2mTag(model *modelgen.Object, field *modelgen.Field) {
@@ -48,18 +43,18 @@ func addM2mTag(model *modelgen.Object, field *modelgen.Field) {
 	} else {
 		m2mName = typeOfField + model.Name
 	}
-	field.Tag += ` gorm:"many2many:` + camel2Snacke(m2mName) + `s"`
+	field.Tag += ` gorm:"many2many:` + camel2Snake(m2mName) + `s"`
 }
 
-func addGormTags(model *modelgen.Object) {
-	for _, field := range model.Fields {
-		if strings.HasPrefix(field.Type.String(), "[]") {
-			addM2mTag(model, field)
+func camel2Snake(str string) string {
+	var newStr string
+	for i, c := range str {
+		if unicode.IsUpper(c) && i != 0 {
+			newStr += "_"
 		}
-		if field.Name == "id" {
-			field.Tag += ` gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-		}
+		newStr += string(unicode.ToLower(c))
 	}
+	return newStr
 }
 
 func addGormFields(model *modelgen.Object) {
@@ -93,11 +88,18 @@ func addGormFields(model *modelgen.Object) {
 	)
 }
 
-// Defining mutation function
-func mutateHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
-	for _, model := range b.Models {
-		addGormTags(model)
-		addGormFields(model)
+func init() {
+	cfg, err := config.LoadConfigFromDefaultLocations()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "failed to load config", err.Error())
+		os.Exit(2)
 	}
-	return b
+	// Attaching the mutation function onto modelgen plugin
+	p := modelgen.Plugin{
+		MutateHook: mutateHook,
+	}
+	err = api.Generate(cfg,
+		api.NoPlugins(),
+		api.AddPlugin(&p),
+	)
 }

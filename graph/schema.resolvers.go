@@ -26,10 +26,6 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 func (r *queryResolver) Actions(ctx context.Context) ([]*model.Action, error) {
 	var actions []*model.Action
 	r.DB.Find(&actions)
-	// var acts []*model.Action
-	// for _, a := range actions {
-	// 	acts = append(acts, &a)
-	// }
 	return actions, nil
 }
 

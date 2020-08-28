@@ -7,7 +7,7 @@ import (
 )
 
 type Action struct {
-	ID              string             `json:"id" gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	ID              string             `json:"id" gorm:"primary_key"`
 	Name            *string            `json:"name"`
 	InternshipModel []*InternshipModel `json:"internshipModel" gorm:"many2many:internship_model_actions"`
 	// gorm.Model
@@ -17,7 +17,7 @@ type Action struct {
 }
 
 type Internship struct {
-	ID              string           `json:"id" gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	ID              string           `json:"id" gorm:"primary_key"`
 	Name            string           `json:"name"`
 	InternshipModel *InternshipModel `json:"internshipModel"`
 	Users           []*User          `json:"users" gorm:"many2many:user_internships"`
@@ -28,7 +28,7 @@ type Internship struct {
 }
 
 type InternshipModel struct {
-	ID      string    `json:"id" gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	ID      string    `json:"id" gorm:"primary_key"`
 	Name    string    `json:"name"`
 	Actions []*Action `json:"actions" gorm:"many2many:internship_model_actions"`
 	// gorm.Model
@@ -38,7 +38,7 @@ type InternshipModel struct {
 }
 
 type Log struct {
-	ID      string    `json:"id" gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	ID      string    `json:"id" gorm:"primary_key"`
 	Student *User     `json:"student"`
 	Action  *Action   `json:"action"`
 	Master  *User     `json:"master"`
@@ -58,7 +58,7 @@ type NewAction struct {
 }
 
 type User struct {
-	ID         string        `json:"id" gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	ID         string        `json:"id" gorm:"primary_key"`
 	Number     string        `json:"number"`
 	NCode      *string       `json:"nCode"`
 	Username   string        `json:"username"`
