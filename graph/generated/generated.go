@@ -76,7 +76,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Users func(childComplexity int) int
+		Actions func(childComplexity int) int
+		Users   func(childComplexity int) int
 	}
 
 	User struct {
@@ -98,6 +99,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
+	Actions(ctx context.Context) ([]*model.Action, error)
 }
 
 type executableSchema struct {
@@ -231,6 +233,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateAction(childComplexity, args["input"].(model.NewAction)), true
+
+	case "Query.actions":
+		if e.complexity.Query.Actions == nil {
+			break
+		}
+
+		return e.complexity.Query.Actions(childComplexity), true
 
 	case "Query.users":
 		if e.complexity.Query.Users == nil {
@@ -426,6 +435,7 @@ type User{
 
 type Query {
   users: [User!]!
+  actions: [Action!]!
 }
 
 input NewAction {
@@ -1081,6 +1091,40 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	res := resTmp.([]*model.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_actions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Actions(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Action)
+	fc.Result = res
+	return ec.marshalNAction2ᚕᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐActionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2768,6 +2812,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "actions":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_actions(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -3087,6 +3145,43 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 func (ec *executionContext) marshalNAction2githubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐAction(ctx context.Context, sel ast.SelectionSet, v model.Action) graphql.Marshaler {
 	return ec._Action(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAction2ᚕᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐActionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Action) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAction2ᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐAction(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalNAction2ᚖgithubᚗcomᚋxaoirseᚋlogbookᚋgraphᚋmodelᚐAction(ctx context.Context, sel ast.SelectionSet, v *model.Action) graphql.Marshaler {

@@ -17,7 +17,7 @@ import (
 // New return a new *Echo
 func New(db *gorm.DB) *echo.Echo {
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{DB: db}}))
 
 	e := echo.New()
 	// TODO random secret generator
@@ -40,7 +40,7 @@ func New(db *gorm.DB) *echo.Echo {
 
 	// gqlgen
 	e.GET("/", echo.WrapHandler(playground.Handler("GraphQL playground", "/query")))
-	e.GET("/query/", echo.WrapHandler(srv))
+	e.POST("/query/", echo.WrapHandler(srv))
 
 	// Dashboard
 	dash := e.Group("/dashboard")

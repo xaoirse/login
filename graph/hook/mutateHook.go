@@ -57,7 +57,7 @@ func addGormTags(model *modelgen.Object) {
 			addM2mTag(model, field)
 		}
 		if field.Name == "id" {
-			field.Tag += ` gorm:"primary_key"`
+			field.Tag += ` gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 		}
 	}
 }
@@ -89,13 +89,8 @@ func addGormFields(model *modelgen.Object) {
 			Name: "DeletedAt",
 			Type: typP,
 			Tag:  `sql:"index"`,
-		})
-	/*
-	   ID        uint `gorm:"primary_key"`
-	   	CreatedAt time.Time
-	   	UpdatedAt time.Time
-	   	DeletedAt *time.Time `sql:"index"`
-	*/
+		},
+	)
 }
 
 // Defining mutation function

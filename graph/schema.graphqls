@@ -51,6 +51,7 @@ type User{
 
 type Query {
   users: [User!]!
+  actions: [Action!]!
 }
 
 input NewAction {

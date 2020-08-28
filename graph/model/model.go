@@ -4,6 +4,8 @@ import (
 	"log"
 
 	"github.com/jinzhu/gorm"
+	uuid "github.com/satori/go.uuid"
+
 	// init sqlite
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -22,4 +24,9 @@ func GetDb() *gorm.DB {
 		&Log{},
 	)
 	return db
+}
+
+func (action *Action) BeforeCreate(scope *gorm.Scope) error {
+	scope.SetColumn("ID", uuid.NewV4().String())
+	return nil
 }

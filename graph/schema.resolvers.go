@@ -12,11 +12,25 @@ import (
 )
 
 func (r *mutationResolver) CreateAction(ctx context.Context, input model.NewAction) (*model.Action, error) {
-	panic(fmt.Errorf("not implemented"))
+	action := model.Action{
+		Name: &input.Name,
+	}
+	r.DB.Create(&action)
+	return &action, nil
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Actions(ctx context.Context) ([]*model.Action, error) {
+	var actions []*model.Action
+	r.DB.Find(&actions)
+	// var acts []*model.Action
+	// for _, a := range actions {
+	// 	acts = append(acts, &a)
+	// }
+	return actions, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
