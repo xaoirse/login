@@ -9,7 +9,7 @@ import (
 type Action struct {
 	ID              string             `json:"id" gorm:"primary_key"`
 	Name            *string            `json:"name"`
-	InternshipModel []*InternshipModel `json:"internshipModel" gorm:"many2many:internship_model_actions"`
+	InternshipModel []*InternshipModel `json:"internshipModel" gorm:"many2many:internship_model_actions`
 	// gorm.Model
 	CreatedAt time.Time  ``
 	UpdatedAt time.Time  ``
@@ -20,7 +20,7 @@ type Internship struct {
 	ID              string           `json:"id" gorm:"primary_key"`
 	Name            string           `json:"name"`
 	InternshipModel *InternshipModel `json:"internshipModel"`
-	Users           []*User          `json:"users" gorm:"many2many:user_internships"`
+	Users           []*User          `json:"users" gorm:"many2many:user_internships`
 	// gorm.Model
 	CreatedAt time.Time  ``
 	UpdatedAt time.Time  ``
@@ -30,7 +30,7 @@ type Internship struct {
 type InternshipModel struct {
 	ID      string    `json:"id" gorm:"primary_key"`
 	Name    string    `json:"name"`
-	Actions []*Action `json:"actions" gorm:"many2many:internship_model_actions"`
+	Actions []*Action `json:"actions" gorm:"many2many:internship_model_actions`
 	// gorm.Model
 	CreatedAt time.Time  ``
 	UpdatedAt time.Time  ``
@@ -67,7 +67,7 @@ type User struct {
 	Lastname   *string       `json:"lastname"`
 	Role       string        `json:"Role"`
 	Phone      *string       `json:"phone"`
-	Internship []*Internship `json:"internship" gorm:"many2many:user_internships"`
+	Internship []*Internship `json:"internship" gorm:"many2many:user_internships`
 	// gorm.Model
 	CreatedAt time.Time  ``
 	UpdatedAt time.Time  ``

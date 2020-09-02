@@ -12,7 +12,6 @@ import (
 	"github.com/99designs/gqlgen/plugin/modelgen"
 )
 
-// Defining mutation function
 func mutateHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
 	for _, model := range b.Models {
 		addGormTags(model)
@@ -23,36 +22,40 @@ func mutateHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
 
 func addGormTags(model *modelgen.Object) {
 	for _, field := range model.Fields {
+		// many2many tag
 		if strings.HasPrefix(field.Type.String(), "[]") {
 			addM2mTag(model, field)
 		}
+		// ID tag
 		if field.Name == "id" {
+			field.Tag += ` gorm:"primary_key"`
 			// Why?
 			// ` gorm:"primary_key;type:uuid;default:uuid_generate_v4()`
-			field.Tag += ` gorm:"primary_key"`
 		}
 	}
 }
+
+type name string
 
 func addM2mTag(model *modelgen.Object, field *modelgen.Field) {
 	str := strings.Split(field.Type.String(), ".")
 	typeOfField := str[len(str)-1]
-	var m2mName string
+	var m2mName name
 	if model.Name > typeOfField {
-		m2mName = model.Name + typeOfField
+		m2mName = name(model.Name + typeOfField)
 	} else {
-		m2mName = typeOfField + model.Name
+		m2mName = name(typeOfField + model.Name)
 	}
-	field.Tag += ` gorm:"many2many:` + camel2Snake(m2mName) + `s"`
+	field.Tag += fmt.Sprintf(` gorm:"many2many:%ss`, m2mName.snackeCase())
 }
 
-func camel2Snake(str string) string {
-	var newStr string
-	for i, c := range str {
+func (str *name) snackeCase() name {
+	var newStr name
+	for i, c := range *str {
 		if unicode.IsUpper(c) && i != 0 {
 			newStr += "_"
 		}
-		newStr += string(unicode.ToLower(c))
+		newStr += name(unicode.ToLower(c))
 	}
 	return newStr
 }
