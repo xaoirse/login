@@ -15,7 +15,7 @@ import (
 )
 
 // New return a new *Echo
-func New(db *gorm.DB) *echo.Echo {
+func New(db *gorm.DB, secret *string) *echo.Echo {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{DB: db}}))
 
@@ -25,7 +25,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// environmental variable, or flag (or both), and don't accidentally commit it
 	// alongside your code. Ensure your key is sufficiently random - i.e. use Go's
 	// crypto/rand or securecookie.GenerateRandomKey(32) and persist the result.
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(*secret))))
 	e.Pre(middleware.AddTrailingSlash())
 	e.Use(middleware.Secure())
 	// TODO uncomment for release or write better one

@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/xaoirse/logbook/model"
+	"github.com/xaoirse/logbook/graph/model"
 
 	"github.com/labstack/echo/v4"
 )

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo/v4"
 	uuid "github.com/satori/go.uuid"
 
 	// init sqlite
@@ -29,4 +30,16 @@ func GetDb() *gorm.DB {
 func (action *Action) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("ID", uuid.NewV4().String())
 	return nil
+}
+
+func IsSessionValid(c echo.Context, b bool) bool {
+	return true
+}
+
+type Session struct {
+	Username string
+}
+
+func (s *Session) New(c echo.Context, db *gorm.DB) string {
+	return "token"
 }

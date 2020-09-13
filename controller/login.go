@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/xaoirse/logbook/model"
+	"github.com/xaoirse/logbook/graph/model"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"

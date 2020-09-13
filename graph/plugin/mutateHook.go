@@ -1,4 +1,4 @@
-package hook
+package plugin
 
 import (
 	"fmt"
@@ -11,6 +11,22 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 	"github.com/99designs/gqlgen/plugin/modelgen"
 )
+
+func init() {
+	cfg, err := config.LoadConfigFromDefaultLocations()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "failed to load config", err.Error())
+		os.Exit(2)
+	}
+	// Attaching the mutation function onto modelgen plugin
+	p := modelgen.Plugin{
+		MutateHook: mutateHook,
+	}
+	err = api.Generate(cfg,
+		api.NoPlugins(),
+		api.AddPlugin(&p),
+	)
+}
 
 func mutateHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
 	for _, model := range b.Models {
@@ -38,8 +54,9 @@ func addGormTags(model *modelgen.Object) {
 type name string
 
 func addM2mTag(model *modelgen.Object, field *modelgen.Field) {
-	str := strings.Split(field.Type.String(), ".")
-	typeOfField := str[len(str)-1]
+	// str := strings.Split(field.Type.String(), ".")
+	// typeOfField := str[len(str)-1]
+	typeOfField := field.Type.String()[strings.LastIndex(field.Type.String(), ".")+1:]
 	var m2mName name
 	if model.Name > typeOfField {
 		m2mName = name(model.Name + typeOfField)
@@ -88,21 +105,5 @@ func addGormFields(model *modelgen.Object) {
 			Type: typP,
 			Tag:  `sql:"index"`,
 		},
-	)
-}
-
-func init() {
-	cfg, err := config.LoadConfigFromDefaultLocations()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "failed to load config", err.Error())
-		os.Exit(2)
-	}
-	// Attaching the mutation function onto modelgen plugin
-	p := modelgen.Plugin{
-		MutateHook: mutateHook,
-	}
-	err = api.Generate(cfg,
-		api.NoPlugins(),
-		api.AddPlugin(&p),
 	)
 }

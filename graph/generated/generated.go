@@ -432,7 +432,6 @@ type User{
   internship: [Internship]
 }
 
-
 type Query {
   users: [User!]!
   actions: [Action!]!
